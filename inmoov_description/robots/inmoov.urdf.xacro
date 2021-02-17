@@ -1,0 +1,256 @@
+<?xml version="1.0"?>
+
+<robot name="inmoov" xmlns:xacro="http://ros.org/wiki/xacro">
+
+<xacro:include filename="$(find inmoov_description)/urdf/config.joints.urdf.xacro" />
+<xacro:include filename="$(find inmoov_description)/urdf/config.inertial.urdf.xacro" />
+<xacro:include filename="$(find inmoov_description)/urdf/materials.urdf.xacro" />
+<xacro:include filename="$(find inmoov_description)/urdf/inmoov.gazebo" />
+<xacro:include filename="$(find inmoov_description)/urdf/kinect.gazebo" />
+
+  <xacro:include filename="$(find inmoov_description)/urdf/materials.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmBase.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmTorso.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmHead.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmEye.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmFace.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmArm.urdf.xacro" />
+  <xacro:include filename="$(find inmoov_description)/urdf/asmHand.urdf.xacro" />
+ <!-- <xacro:include filename="$(find inmoov_description)/robots/kinecttrial.urdf.xacro" /> -->
+ <xacro:property name="PI_2" value="1.57079632679" />
+  <xacro:property name="cameraSize" value="0.05"/>
+  <xacro:property name="cameraMass" value="0.1"/>
+  <link name="world"/>
+
+  <joint name="fixed" type="fixed">
+    <parent link="world"/>
+    <child link="base_link"/>
+  </joint>
+
+   
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.11" radius="0.26"/>
+      </geometry> 
+      <origin rpy="0 0 0" xyz="0 0 0.105"/>
+      <xacro:base_color/>
+    </visual>
+    <collision name='front_caster_collision'>
+      <origin xyz="0.13 0 0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </collision>
+
+    <visual name='front_caster_visual'>
+      <origin xyz="0.13 0 0.05" rpy=" 0 0 0"/>
+      <geometry>
+        <sphere radius="0.05"/>
+      </geometry>
+    </visual>
+    
+  </link>
+
+  <joint name="base_to_pedestal_link" type="fixed">
+    <parent link="base_link"/>
+    <child link="pedestal_link"/>
+    <origin rpy="0 0 0"  xyz="0 0 0"/>
+  </joint>
+
+  <link name="left_wheel">
+      
+    <inertial>
+      <mass value="5"/>
+      <origin xyz="0 0 0" rpy=" 0 1.5707 1.5707"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1"
+      />
+    </inertial>
+
+    <collision name='collision'>
+      <origin xyz="0 0 0.05" rpy=" 0 1.5707 1.5707"/> 
+      <geometry>
+        <sphere radius="0.05" length="0.05"/>
+      </geometry>
+    </collision>
+
+    <visual name='left_wheel_visual'>
+      <origin xyz="0 0 0.05" rpy=" 0 1.5707 1.5707"/>
+      <geometry>
+         <sphere radius="0.05" length="0.05"/>
+      </geometry>
+    </visual>
+  </link>
+     
+
+   <joint name="left_wheel_hinge" type="continuous">
+    <parent link="base_link"/>
+    <child link="left_wheel"/>
+    <origin rpy="0 0 0"  xyz="-0.13 -0.13 0"/>
+  </joint>
+
+  <link name="right_wheel">
+      
+    <inertial>
+      <mass value="5"/>
+      <origin xyz="0 0 0" rpy=" 0 1.5707 1.5707"/>
+      <inertia
+          ixx="0.1" ixy="0" ixz="0"
+          iyy="0.1" iyz="0"
+          izz="0.1"
+      />
+    </inertial>
+
+    <collision name='collision'>
+      <origin xyz="0 0 0.05" rpy=" 0 1.5707 1.5707"/> 
+      <geometry>
+        <sphere radius="0.05" length="0.05"/>
+      </geometry>
+    </collision>
+
+    <visual name='right_wheel_visual'>
+      <origin xyz="0 0 0.05" rpy=" 0 1.5707 1.5707"/>
+      <geometry>
+         <sphere radius="0.05" length="0.05"/>
+      </geometry>
+    </visual>
+  </link>
+     
+
+   <joint name="right_wheel_hinge" type="continuous">
+    <parent link="base_link"/>
+    <child link="right_wheel"/>
+    <origin rpy="0 0 0"  xyz="-0.13 0.13 0"/>
+  </joint>
+
+  <link name="pedestal_link">
+    <visual>
+      <geometry>
+        <cylinder length="0.94" radius="0.0254"/>
+      </geometry>
+      <origin rpy="0 0 0" xyz="0 0 0.63"/>
+      <xacro:base_color/>
+    </visual>
+  </link>
+
+  <link name="head_tilt_link">
+    <visual>
+      <geometry>
+        <mesh filename="package://inmoov_meshes/meshes/virtual.stl" scale="0.001 0.001 0.001"/>
+      </geometry>
+      <origin rpy="0 0 3.1415" xyz="0 0 0"/>
+      <xacro:frame_color/>
+    </visual>
+    <xacro:virtual_inertial/>
+  </link>
+
+  <joint name="pedestal_to_mid_stomach_joint" type="fixed">
+    <parent link="pedestal_link"/>
+    <child link="mid_stomach_link"/>
+     <origin rpy="0 0 0"  xyz="0 0 0"/>
+  </joint>
+
+  <xacro:torso covers="yes" />
+
+  <joint name="head_roll_joint" type="revolute">
+   <axis xyz="1 0 0"/>
+   <limit effort="1000.0" lower="${head_roll_joint_lower}" upper="${head_roll_joint_upper}" velocity="${head_roll_joint_velocity}" />
+   <origin rpy="0 0 3.1415" xyz="-0.0315  -0.001 0.4551"/>
+   <parent link="torso_link"/>
+   <child link="head_tilt_link"/>
+  </joint>
+
+
+  <joint name="head_tilt_joint" type="revolute">
+   <axis xyz="0 1 0"/>
+   <limit effort="1000.0" lower="${head_tilt_joint_lower}" upper="${head_tilt_joint_upper}" velocity="${head_tilt_joint_velocity}" />
+   <origin rpy="0 0 3.1415" xyz="0 0 0"/>
+   <parent link="head_tilt_link"/>
+   <child link="head_base_link"/>
+  </joint>
+
+  <xacro:head covers="yes" />
+
+  <xacro:face covers="yes" />
+
+  <joint name="face_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.0637 0 0.079"/>
+    <parent link="skull_link"/>
+    <child link="face_link"/>
+  </joint>
+
+  <xacro:arm side="r" flip="1" covers="yes" />
+
+  <joint name="r_shoulder_out_joint" type="revolute">
+   <axis xyz="1 0 0"/>
+   <limit effort="1000.0" lower="${r_shoulder_out_joint_lower}" upper="${r_shoulder_out_joint_upper}" velocity="${r_shoulder_out_joint_velocity}" />
+   <origin rpy="0 0 0" xyz="0 -0.143 0.298"/>
+   <parent link="torso_link"/>
+   <child link="r_shoulder_base_link"/>
+  </joint>
+
+  <xacro:hand side="r" flip="1" covers="yes" />
+
+  <joint name="r_wrist_roll_joint" type="revolute">
+   <axis xyz="0 0 1"/>
+   <limit effort="1000.0" lower="${r_wrist_roll_joint_lower}" upper="${r_wrist_roll_joint_upper}" velocity="${r_wrist_roll_joint_velocity}" />
+   <origin rpy="0 0 0" xyz="-0.0144 0.01  -0.2885"/>
+   <parent link="r_forearm_link"/>
+   <child link="r_hand_link"/>
+  </joint>
+
+  <xacro:arm side="l" flip="-1" covers="yes" />
+
+  <joint name="l_shoulder_out_joint" type="revolute">
+   <axis xyz="1 0 0"/>
+   <limit effort="1000.0" lower="${l_shoulder_out_joint_lower}" upper="${l_shoulder_out_joint_upper}" velocity="${l_shoulder_out_joint_velocity}" />
+   <origin rpy="0 0 0" xyz="0 0.143 0.298"/>
+   <parent link="torso_link"/>
+   <child link="l_shoulder_base_link"/>
+  </joint>
+
+  <xacro:hand side="l" flip="-1" covers="yes" />
+
+  <joint name="l_wrist_roll_joint" type="revolute">
+   <axis xyz="0 0 1"/>
+   <limit effort="1000.0" lower="${l_wrist_roll_joint_lower}" upper="${l_wrist_roll_joint_upper}" velocity="${l_wrist_roll_joint_velocity}" />
+   <origin rpy="0 0 0" xyz="-0.0144 -0.01  -0.2885"/>
+   <parent link="l_forearm_link"/>
+   <child link="l_hand_link"/>
+  </joint>
+
+ <link name="camera">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 ${PI_2}"/>
+      <geometry>
+         <mesh filename="package://inmoov_description/sensor/kinect.dae"/>
+      </geometry>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 ${PI_2}"/>
+      <geometry>
+        <mesh filename="package://inmoov_description/sensor/kinect.dae"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="${cameraMass}" />
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <box_inertia m="${cameraMass}" x="${cameraSize}" y="${cameraSize}" z="${cameraSize}" />
+      <inertia ixx="1e-6" ixy="0" ixz="0" iyy="1e-6" iyz="0" izz="1e-6" />
+    </inertial>
+  </link>
+
+  <joint name="camera_joint" type="fixed">
+    <axis xyz="0 1 0" />
+    <origin xyz="0.07 0 1.35" rpy="0 0 0"/>
+    <parent link="base_link"/>
+    <child link="camera"/>
+  </joint>
+
+ 
+
+</robot>
+
